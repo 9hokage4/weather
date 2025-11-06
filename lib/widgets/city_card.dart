@@ -20,6 +20,7 @@ class _CityCardState extends State<CityCard> {
   }
 
   Future<void> _loadWeather() async {
+    
     try {
       final weather = await WeatherService.fetchWeather(widget.city);
       setState(() {
