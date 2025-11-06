@@ -4,6 +4,7 @@ import '../services/weather_service.dart';
 
 class CityCard extends StatefulWidget {
   final String city;
+
   const CityCard({super.key, required this.city});
 
   @override
@@ -12,6 +13,7 @@ class CityCard extends StatefulWidget {
 
 class _CityCardState extends State<CityCard> {
   Weather? _weather;
+  String? _error;
 
   @override
   void initState() {
@@ -20,28 +22,36 @@ class _CityCardState extends State<CityCard> {
   }
 
   Future<void> _loadWeather() async {
-    
     try {
       final weather = await WeatherService.fetchWeather(widget.city);
-      setState(() {
-        _weather = weather;
-      });
+      if (mounted) {
+        setState(() {
+          _weather = weather;
+          _error = null;
+        });
+      }
     } catch (e) {
-      print('Ошибка загрузки погоды: $e');
+      if (mounted) {
+        setState(() {
+          _error = e.toString();
+          _weather = null;
+        });
+      }
     }
   }
 
   @override
   Widget build(BuildContext context) {
     return Card(
+      margin: const EdgeInsets.all(8),
       child: Padding(
         padding: const EdgeInsets.all(16),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text(widget.city),
+            Text(widget.city, style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+            const SizedBox(height: 12),
             if (_weather != null) ...[
-              const SizedBox(height: 8),
               Row(
                 children: [
                   Image.network(
@@ -49,14 +59,15 @@ class _CityCardState extends State<CityCard> {
                     width: 40,
                     height: 40,
                   ),
-                  const SizedBox(width: 8),
-                  Text('${_weather!.temperature}°'),
+                  const SizedBox(width: 12),
+                  Text('${_weather!.temperature}°', style: const TextStyle(fontSize: 24)),
                 ],
               ),
               const SizedBox(height: 4),
               Text(_weather!.conditionText),
+            ] else if (_error != null) ...[
+              Text('Ошибка: $_error', style: const TextStyle(color: Colors.red)),
             ] else ...[
-              const SizedBox(height: 8),
               const CircularProgressIndicator(),
             ],
           ],

@@ -21,16 +21,13 @@ class WeatherApp extends StatelessWidget {
 
 class WeatherScreen extends StatefulWidget {
   @override
-  const WeatherScreen({super.key});
-
-  @override
   State<WeatherScreen> createState() => _WeatherScreenState();
 }
 
 class _WeatherScreenState extends State<WeatherScreen> {
   List<String> cities = ['Омск'];
 
-  void addCity(String city) {
+  void _addCity(String city) {
     setState(() {
       cities.add(city);
     });
@@ -40,13 +37,13 @@ class _WeatherScreenState extends State<WeatherScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       body: ListView.builder(
-        itemCount: cities.length,
+        itemCount: cities.length + 1,
         itemBuilder: (context, index) {
-          // if (index < cities.length) {
-          return CityCard(city: 'Омск');
-          //} else {
-          // return AddCityButton(onAdd: addCity);
-          // }
+          if (index < cities.length) {
+            return CityCard(city: cities[index]);
+          } else {
+            return AddCityButton(onAdd: _addCity);
+          }
         },
       ),
     );
